@@ -26,8 +26,9 @@ contract StudentSocietyDAO {
     }
     Proposal[] public proposals; //
 
-    StuERC20 studentERC20;
-    mapping(uint32 => Proposal) proposals; // A map from proposal index to proposal
+    StuERC20 public studentERC20;
+
+    // mapping(uint32 => Proposal) proposals; // A map from proposal index to proposal
 
     // ...
     // TODO add any variables if you want
@@ -38,26 +39,19 @@ contract StudentSocietyDAO {
     }
 
     //领取token
-    function JoinIn() public {
-        studentERC20.transferFrom(msg.sender, address(this), PLAY_AMOUNT);
-    }
 
     // 提出提案
     function propose(string memory name, uint256 duration) public {
         // TODO
         // 1. create a new proposal
+
         require(msg.sender.balance >= 0, "no enough money");
         // 看是否有相同的提案
-        for (uint256 i = 1; i < proposals.length; i++) {
-            if (proposals[i].name == name) {
-                revert("The proposal has been proposed");
-                break;
-            }
-        }
+
         // 把提案加入到队列中
         proposals.push(
             Proposal(
-                proposals.length,
+                uint32(proposals.length),
                 msg.sender,
                 block.timestamp,
                 duration,
@@ -65,13 +59,21 @@ contract StudentSocietyDAO {
                 0
             )
         );
-        emit ProposalInitiated(proposals.length);
+        emit ProposalInitiated(uint32(proposals.length));
         //收取两个token
         studentERC20.transferFrom(msg.sender, address(this), 2);
     }
 
     // 对提案进行投票
     // opinion: 1表示支持，-1表示反对
+    function getPropoNum()  public pure returns(uint32){
+        uint32 len=5;
+        return len;
+    }
+    function getPropName(uint32 i)public view returns (string memory){
+        string memory n=proposals[i].name;
+        return n;
+    }
     function vote(uint32 index, uint32 opin) public {
         // 要求目前时间在提案的时间范围内
         require(
@@ -90,14 +92,14 @@ contract StudentSocietyDAO {
     // 时间截止后，统计投票结果
     function countVote(uint32 index) public {
         require(
-            block.timestamp>=proposals[index].startTime+proposals[index].duration,
+            block.timestamp >=
+                proposals[index].startTime + proposals[index].duration,
             "The proposal is not over"
         );
-        if(proposals[index].vote>0){
+        if (proposals[index].vote > 0) {
             // 支持票数多，提案通过
             // 把token转给提案发起者
             studentERC20.transfer(proposals[index].proposer, 2);
         }
     }
-
 }
