@@ -14,6 +14,7 @@ const config: HardhatUserConfig = {
         "5f48889bc8e8fb8ea46a7a9844063db05d212fa1a9c52ddfa6f16ddd29a0877c",
         "b30f31044a8e2bb1e7ec339bae0dccc562d5848ac449d2ece50aa8d26c7c588f",
         "d5cd6fe7cea9b6a5e1b5212b7d59ff10ee3d13075467c39d2975b2744165ca4d",
+        "33f8b5b4ecaa0ae3c637b79de69023a19d255d212d7bb86b287a11f6e93e5fca",
       ],
     },
   },
