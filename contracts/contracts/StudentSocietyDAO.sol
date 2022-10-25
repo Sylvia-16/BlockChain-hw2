@@ -18,7 +18,7 @@ contract StudentSocietyDAO {
         uint32 index; // index of this proposal
         address proposer; // who make this proposal
         uint256 startTime; // proposal start time
-        uint256 duration; // proposal duration
+        uint256 endTime; // proposal 结束时间
         string name; // proposal name
         uint32 vote; // 支持票 vote+1, 反对票 vote-1
 
@@ -44,17 +44,19 @@ contract StudentSocietyDAO {
     function propose(string memory name, uint256 duration) public {
         // TODO
         // 1. create a new proposal
-
+        // duration的单位是秒
         require(msg.sender.balance >= 0, "no enough money");
         // 看是否有相同的提案
-
+        uint256 etime;
+        uint256 stime=block.timestamp;
+        etime=stime+duration;
         // 把提案加入到队列中
         proposals.push(
             Proposal(
                 uint32(proposals.length),
                 msg.sender,
-                block.timestamp,
-                duration,
+                stime,
+                etime,
                 name,
                 0
             )
@@ -63,7 +65,9 @@ contract StudentSocietyDAO {
         //收取两个token
         // studentERC20.transferFrom(msg.sender, address(this), 2);
     }
+    function Sec2Hour(uint32 s) public{
 
+    }
     // 对提案进行投票
     // opinion: 1表示支持，-1表示反对
     function getPropoNum()  public view returns(uint32){
@@ -80,7 +84,7 @@ contract StudentSocietyDAO {
         require(
             block.timestamp >= proposals[index].startTime &&
                 block.timestamp <=
-                proposals[index].startTime + proposals[index].duration,
+                proposals[index].endTime,
             "The proposal is not in the voting period"
         );
         // 要求投票者有足够的token
@@ -94,7 +98,7 @@ contract StudentSocietyDAO {
     function countVote(uint32 index) public {
         require(
             block.timestamp >=
-                proposals[index].startTime + proposals[index].duration,
+                proposals[index].endTime,
             "The proposal is not over"
         );
         if (proposals[index].vote > 0) {

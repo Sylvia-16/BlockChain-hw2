@@ -41,10 +41,10 @@ const ProposePage = () => {
         {
           title: 'Action',
           key: 'action',
-          render: (text, record) => (
+          render: (record) => (
             <Space size="middle">
-             <button onClick={()=>onVote(text,record)}>支持</button>
-             <button onClick={()=>onAgainst(text,record)}>反对</button>
+             <button onClick={()=>onVote(record)}>支持</button>
+             <button onClick={()=>onAgainst(record)}>反对</button>
             </Space>
           ),
         },
@@ -81,14 +81,18 @@ const ProposePage = () => {
                 alert('You have not connected wallet yet.')
                 return
             }
-    
+            
             if (proposeContract && stuERC20Contract) {
                 try {
                     await stuERC20Contract.methods.approve(proposeContract.options.address, playAmount).send({
                         from: account
                     })
                     // 将提案提交到合约
-                    await proposeContract.methods.propose(values.name, values.time).send({
+                    let h:number 
+                    // 把time乘3600转化成秒
+                    h = values.time*3600
+                    console.log('time',h)
+                    await proposeContract.methods.propose(values.name, h).send({
                         from: account
                     })
                     
@@ -203,8 +207,9 @@ const ProposePage = () => {
     }
 
    
-    const onVote = async (text:string,record:DataType) => {
-        console.log('voteeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',text,record)
+    const onVote = async (record:DataType) => {
+        console.log('voteeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',record)
+        console.log('index',record.index)
         if(account === '') {
             alert('You have not connected wallet yet.')
             return
@@ -212,7 +217,7 @@ const ProposePage = () => {
 
         if (proposeContract && stuERC20Contract) {
             try {
-                await proposeContract.methods.vote(1,1).send({
+                await proposeContract.methods.vote(record.index,1).send({
                     from: account
                 })
 
@@ -225,8 +230,8 @@ const ProposePage = () => {
         }
     }
 // `   record：参数类型为DataType，text：参数类型为string，index：参数类型为number`
-    const onAgainst = async (text: string,record:DataType) => {
-        console.log('againsttttttttttttttttttttttttttttttttttttt',text,record)
+    const onAgainst = async (record:DataType) => {
+        console.log('againsttttttttttttttttttttttttttttttttttttt',record)
         if(account === '') {
             alert('You have not connected wallet yet.')
             return
@@ -234,7 +239,7 @@ const ProposePage = () => {
 
         if (proposeContract && stuERC20Contract) {
             try {
-                await proposeContract.methods.vote(1,-1).send({
+                await proposeContract.methods.vote(record.index,-1).send({
                     from: account
                 })
 
@@ -329,11 +334,8 @@ const ProposePage = () => {
         rules={[{ required: true, message: 'Please enter the duration of the proposal (in hours)' }]}
       >
         <Input />
-
       </Form.Item>
-      
-      
-        
+    
       <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
         <Button type="primary" htmlType="submit" >
           Submit
@@ -342,7 +344,7 @@ const ProposePage = () => {
     </Form>
                 <div className='operation'>
                     <div style={{marginBottom: '20px'}}>操作栏</div>
-                    <div className='buttons'>
+                    <div className='table'>
                         <Table dataSource={propoData} columns={columns} rowKey={(record) => {   return record.index}}/>
                     </div>
                 </div>
