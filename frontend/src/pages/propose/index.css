@@ -1,3 +1,5 @@
+/* 导入antd组件 */
+@import '~antd/dist/antd.css';
 .container {
   
 
@@ -25,3 +27,4 @@
     justify-content: space-between;
     align-items: center;
 }
+/* 引入table组件 */
