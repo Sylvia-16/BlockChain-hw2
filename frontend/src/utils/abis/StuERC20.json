@@ -30,7 +30,8 @@
 		}
 	},
 	"data": {
-		"bytecode": {
+		"bytecode": 
+{
 			"functionDebugData": {
 				"@_44": {
 					"entryPoint": null,

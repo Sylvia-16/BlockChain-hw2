@@ -1,11 +1,11 @@
 import {Button} from 'antd';
 import { Space, Table} from 'antd';
+import {  Form, Input } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import {useEffect, useState} from 'react';
 import {proposeContract, stuERC20Contract, web3} from "../../utils/contracts";
 import './index.css';
 import BButton from '@material-ui/core/Button';
-import internal from 'stream';
 const GanacheTestChainId = '0x539' // Ganache默认的ChainId = 0x539 = Hex(1337)
 // TODO change according to your configuration
 const GanacheTestChainName = 'Ganache Test Chain'
@@ -18,18 +18,19 @@ const ProposePage = () => {
     const [propoNum, setPropoNum] = useState(0)
     
     const[playAmount, setPlayAmount] = useState(0)
-
+    
     interface DataType {
         index: number;
         name: string;
       }
-    let propoData: DataType[];
+    const [propoData, setpropoData] = useState<DataType[]>([]);
+    //   -----------------------表格列-------------------------------------------
       const columns: ColumnsType<DataType> = [
         {
           title: 'Index',
           dataIndex: 'index',
           key: 'index',
-          render: text => <a>{text}</a>,
+       
         },
         {
           title: 'Name',
@@ -40,19 +41,71 @@ const ProposePage = () => {
         {
           title: 'Action',
           key: 'action',
-          render: (_, record) => (
+          render: (text, record) => (
             <Space size="middle">
-              <a>Invite {record.name}</a>
-              <a>Delete</a>
+             <button onClick={()=>onVote(text,record)}>支持</button>
+             <button onClick={()=>onAgainst(text,record)}>反对</button>
             </Space>
           ),
         },
         
       ];
-      
-   
+    //   -----------------------提案数据get------------------------------------------
+      useEffect(() => {
+        const getData= async () => {
+            // 获取propose数据
+            const pNum = await proposeContract.methods.getPropoNum().call()
+            // 如果pnum大于propoNum，说明有新的数据
+           
+                // 获取新的数据
+                setPropoNum(pNum)
+                let pArr:DataType[] = []
+                for(let i = 0; i < pNum; i++){
+                    const pName = await proposeContract.methods.getPropName(i).call()
+                    pArr.push({index: i, name: pName})
+                }
+                setpropoData(pArr)
+            
+        }
+        getData()
+        }, [])
+    //   -----------------------表单------------------------------------------
+        
+          const onFinishFailed = (errorInfo: any) => {
+            console.log('Failed:', errorInfo);
+          };
+        //   onchenge 函数 输入为value, 返回值为 void 
 
-
+          const onPropose = async (values :any) => {
+            if(account === '') {
+                alert('You have not connected wallet yet.')
+                return
+            }
+    
+            if (proposeContract && stuERC20Contract) {
+                try {
+                    await stuERC20Contract.methods.approve(proposeContract.options.address, playAmount).send({
+                        from: account
+                    })
+                    // 将提案提交到合约
+                    await proposeContract.methods.propose(values.name, values.time).send({
+                        from: account
+                    })
+                    
+                    const sa=await proposeContract.methods.getPropoNum().call();
+                    setPropoNum(sa)
+                    alert('成功发起提案')
+                } catch (error: any) {
+                    alert(error.message)
+                }
+            } else {
+                alert('Contract not exists.')
+            }
+            
+        }
+    
+        
+    //   -----------------------checkaccount------------------------------------------
     useEffect(() => {
         // 初始化检查用户是否已经连接钱包
         // 查看window对象里是否存在ethereum（metamask安装后注入的）对象
@@ -70,19 +123,22 @@ const ProposePage = () => {
 
         initCheckAccounts()
     }, [])
-
+    //  -----------------------合约信息------------------------------------------
     useEffect(() => {
         const getproposeContractInfo = async () => {
             if (proposeContract) {
                 const pa = await proposeContract.methods.PLAY_AMOUNT().call()
-                setPlayAmount(pa)
-
-                console.log('paaaaaaaaaaaaaaaaaaaaaaaaaaa',pa)
-                // await proposeContract.methods.getPropoNum().call()
-                // console.log(pa)
-                // const sa=await proposeContract.methods.getPropoNum().call()
-                // 输出sa的类型
-                
+                // 定义一个number类型变量
+                let paNum: number = 55
+                setPlayAmount(paNum)
+                console.log('pa', pa)
+                console.log('playAmount',playAmount)
+                // console.log('paaaaaaaaaaaaaaaaaaaaaaaaaaa',pa)
+                const ssa = await proposeContract.methods.getPropoNum().call()
+                console.log('ssa', ssa)
+                // // 输出sa的类型
+                setPropoNum(ssa)
+                console.log('propoNum',propoNum)
                 // if(sa!==0){
                 //     alert('000000000000000000ddd00000000000000000000000')
                 //     setPropoNum(sa)
@@ -146,49 +202,9 @@ const ProposePage = () => {
         }
     }
 
-    const onPropose = async () => {
-        if(account === '') {
-            alert('You have not connected wallet yet.')
-            return
-        }
-
-        if (proposeContract && stuERC20Contract) {
-            try {
-                await stuERC20Contract.methods.approve(proposeContract.options.address, playAmount).send({
-                    from: account
-                })
-
-                await proposeContract.methods.propose("fdsfa",10).send({
-                    from: account
-                })
-                const sa=await proposeContract.methods.getPropoNum().call();
-                if(sa!==0){
-                    alert('00000000000000000000000000000000000000000')
-                    setPropoNum(sa)
-                    console.log('ssssssssssssssssssssssss',propoNum)
-                    let d:DataType 
-                  //遍历proposal 将name和index存入propoData
-                    for(let i=0;i<sa;i++){
-                        const name=await proposeContract.methods.getPropoName(i).call();
-                        //把name和index存入d
-                        d={
-                            index:i,
-                            name:name
-                        }
-                        //把d存入propoData
-                        propoData.push(d);
-                    }
-                }
-                alert('你已经发起过提案')
-            } catch (error: any) {
-                alert(error.message)
-            }
-        } else {
-            alert('Contract not exists.')
-        }
-    }
-
-    const onVote = async () => {
+   
+    const onVote = async (text:string,record:DataType) => {
+        console.log('voteeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',text,record)
         if(account === '') {
             alert('You have not connected wallet yet.')
             return
@@ -208,8 +224,9 @@ const ProposePage = () => {
             alert('Contract not exists.')
         }
     }
-
-    const onAgainst = async () => {
+// `   record：参数类型为DataType，text：参数类型为string，index：参数类型为number`
+    const onAgainst = async (text: string,record:DataType) => {
+        console.log('againsttttttttttttttttttttttttttttttttttttt',text,record)
         if(account === '') {
             alert('You have not connected wallet yet.')
             return
@@ -273,12 +290,12 @@ const ProposePage = () => {
 
 
 
-     const Ptables: React.FC = () => <Table columns={columns} dataSource={propoData} />;
+    
     return (
         <div className='container'>
            
             <div className='main'>
-                <h1>浙大彩票DEMO</h1>
+                <h1>社团</h1>
                 <BButton variant="contained" onClick={onClaimTokenAirdrop}>加入社团</BButton>
                
                 
@@ -290,15 +307,43 @@ const ProposePage = () => {
                <div className='try'>
               提案数量
                </div>
-               
-              
+               <Form
+      name="basic"
+      labelCol={{ span: 8 }}
+      wrapperCol={{ span: 16 }}
+      onFinish={onPropose}
+      onFinishFailed={onFinishFailed}
+      autoComplete="off"
+    >
+      <Form.Item
+        label="提案名称"
+        name="name"
+        rules={[{ required: true, message: 'Please input your proposal name!' }]}
+      >
+        <Input />
+      </Form.Item>
+
+      <Form.Item
+        label="持续时间"
+        name="time"
+        rules={[{ required: true, message: 'Please enter the duration of the proposal (in hours)' }]}
+      >
+        <Input />
+
+      </Form.Item>
+      
+      
+        
+      <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+        <Button type="primary" htmlType="submit" >
+          Submit
+        </Button>
+      </Form.Item>
+    </Form>
                 <div className='operation'>
                     <div style={{marginBottom: '20px'}}>操作栏</div>
                     <div className='buttons'>
-                        <Button style={{width: '200px'}} onClick={onPropose}>提出提案</Button>
-                        <Button style={{width: '200px'}} onClick={onVote}>支持提案</Button>
-                        <Button style={{width: '200px'}} onClick={onAgainst}>反对提案</Button>
-                        <Ptables></Ptables>
+                        <Table dataSource={propoData} columns={columns} rowKey={(record) => {   return record.index}}/>
                     </div>
                 </div>
             </div>

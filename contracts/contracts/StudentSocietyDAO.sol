@@ -61,19 +61,20 @@ contract StudentSocietyDAO {
         );
         emit ProposalInitiated(uint32(proposals.length));
         //收取两个token
-        studentERC20.transferFrom(msg.sender, address(this), 2);
+        // studentERC20.transferFrom(msg.sender, address(this), 2);
     }
 
     // 对提案进行投票
     // opinion: 1表示支持，-1表示反对
-    function getPropoNum()  public pure returns(uint32){
-        uint32 len=5;
+    function getPropoNum()  public view returns(uint32){
+        uint32 len=uint32(proposals.length);
         return len;
     }
     function getPropName(uint32 i)public view returns (string memory){
         string memory n=proposals[i].name;
         return n;
     }
+
     function vote(uint32 index, uint32 opin) public {
         // 要求目前时间在提案的时间范围内
         require(
@@ -86,7 +87,7 @@ contract StudentSocietyDAO {
         require(msg.sender.balance >= 1, "no enough money");
         proposals[index].vote += opin;
         // 收取一个token
-        studentERC20.transferFrom(msg.sender, address(this), 1);
+        // studentERC20.transferFrom(msg.sender, address(this), 1);
     }
 
     // 时间截止后，统计投票结果
@@ -99,7 +100,7 @@ contract StudentSocietyDAO {
         if (proposals[index].vote > 0) {
             // 支持票数多，提案通过
             // 把token转给提案发起者
-            studentERC20.transfer(proposals[index].proposer, 2);
+            // studentERC20.transfer(proposals[index].proposer, 2);
         }
     }
 }

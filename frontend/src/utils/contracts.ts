@@ -1,7 +1,7 @@
 import Addresses from "./contract-addresses.json";
 
-import Lottery from "./abis/StudentSocietyDAO.json";
-import MyERC20 from "./abis/StuERC20.json";
+import propo from "./abis/StudentSocietyDAO.json";
+import stuERC from "./abis/StuERC20.json";
 
 const Web3 = require("web3");
 
@@ -11,10 +11,10 @@ const Web3 = require("web3");
 let web3 = new Web3(window.web3.currentProvider);
 
 // 修改地址为部署的合约地址
-const proposeAddress = Addresses.lottery;
-const proposeABI = Lottery.abi;
-const stuERC20Address = Addresses.myERC20;
-const stuERC20ABI = MyERC20.abi;
+const proposeAddress = Addresses.propo;
+const proposeABI = propo.abi;
+const stuERC20Address = Addresses.stuERC20;
+const stuERC20ABI = stuERC.abi;
 
 // 获取合约实例
 const proposeContract = new web3.eth.Contract(proposeABI, proposeAddress);
