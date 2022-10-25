@@ -5,7 +5,7 @@ import type { ColumnsType } from 'antd/es/table';
 import {useEffect, useState} from 'react';
 import {proposeContract, stuERC20Contract, web3} from "../../utils/contracts";
 import './index.css';
-import BButton from '@material-ui/core/Button';
+
 const GanacheTestChainId = '0x539' // Ganache默认的ChainId = 0x539 = Hex(1337)
 // TODO change according to your configuration
 const GanacheTestChainName = 'Ganache Test Chain'
@@ -61,8 +61,15 @@ const ProposePage = () => {
                 setPropoNum(pNum)
                 let pArr:DataType[] = []
                 for(let i = 0; i < pNum; i++){
+                    // 判断该提案是否已经结束
+                    let isEnd = await proposeContract.methods.getIsFinish(i).call()
+               
+                    console.log('i',i,'isEnd',isEnd)
+                  
+                    if(isEnd==='0'){
                     const pName = await proposeContract.methods.getPropName(i).call()
                     pArr.push({index: i, name: pName})
+                }
                 }
                 setpropoData(pArr)
             
@@ -301,7 +308,8 @@ const ProposePage = () => {
            
             <div className='main'>
                 <h1>社团</h1>
-                <BButton variant="contained" onClick={onClaimTokenAirdrop}>加入社团</BButton>
+            
+             <button onClick={onClaimTokenAirdrop}>加入社团</button>  
                
                 
                 <div className='account'>
@@ -312,10 +320,11 @@ const ProposePage = () => {
                <div className='try'>
               提案数量
                </div>
+               <div className='form'>
                <Form
       name="basic"
       labelCol={{ span: 8 }}
-      wrapperCol={{ span: 16 }}
+      wrapperCol={{ span: 5 }}
       onFinish={onPropose}
       onFinishFailed={onFinishFailed}
       autoComplete="off"
@@ -342,6 +351,7 @@ const ProposePage = () => {
         </Button>
       </Form.Item>
     </Form>
+    </div>
                 <div className='operation'>
                     <div style={{marginBottom: '20px'}}>操作栏</div>
                     <div className='table'>

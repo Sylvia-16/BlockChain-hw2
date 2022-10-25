@@ -24,6 +24,11 @@ contract StudentSocietyDAO {
 
         // TODO add any  if you want
     }
+    struct student {
+        uint32 succ_num; // 提案通过次数
+    }
+    // a map from student address to student
+    mapping(address => student) public studentMap;
     Proposal[] public proposals; //
 
     StuERC20 public studentERC20;
@@ -48,8 +53,8 @@ contract StudentSocietyDAO {
         require(msg.sender.balance >= 0, "no enough money");
         // 看是否有相同的提案
         uint256 etime;
-        uint256 stime=block.timestamp;
-        etime=stime+duration;
+        uint256 stime = block.timestamp;
+        etime = stime + duration;
         // 把提案加入到队列中
         proposals.push(
             Proposal(
@@ -65,17 +70,25 @@ contract StudentSocietyDAO {
         //收取两个token
         // studentERC20.transferFrom(msg.sender, address(this), 2);
     }
-    function Sec2Hour(uint32 s) public{
 
+    function getIsFinish(uint32 i) public view returns (uint32) {
+        // 如果当前时间比结束时间大，那么就是结束了
+        if (block.timestamp > proposals[i].endTime) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
+
     // 对提案进行投票
     // opinion: 1表示支持，-1表示反对
-    function getPropoNum()  public view returns(uint32){
-        uint32 len=uint32(proposals.length);
+    function getPropoNum() public view returns (uint32) {
+        uint32 len = uint32(proposals.length);
         return len;
     }
-    function getPropName(uint32 i)public view returns (string memory){
-        string memory n=proposals[i].name;
+
+    function getPropName(uint32 i) public view returns (string memory) {
+        string memory n = proposals[i].name;
         return n;
     }
 
@@ -83,8 +96,7 @@ contract StudentSocietyDAO {
         // 要求目前时间在提案的时间范围内
         require(
             block.timestamp >= proposals[index].startTime &&
-                block.timestamp <=
-                proposals[index].endTime,
+                block.timestamp <= proposals[index].endTime,
             "The proposal is not in the voting period"
         );
         // 要求投票者有足够的token
@@ -95,16 +107,18 @@ contract StudentSocietyDAO {
     }
 
     // 时间截止后，统计投票结果
-    function countVote(uint32 index) public {
+    function countVote(uint32 index) public returns (uint32) {
         require(
-            block.timestamp >=
-                proposals[index].endTime,
+            block.timestamp >= proposals[index].endTime,
             "The proposal is not over"
         );
         if (proposals[index].vote > 0) {
             // 支持票数多，提案通过
             // 把token转给提案发起者
             // studentERC20.transfer(proposals[index].proposer, 2);
+            return 1;
+        } else {
+            return 0;
         }
     }
 }

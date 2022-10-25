@@ -23,4 +23,13 @@
 .ant-row-rtl #components-layout-demo-top .logo {
   float: right;
   margin: 16px 0 16px 24px;
+
+} 
+.logo{
+  float: left;
+  width: 200px;
+  height: 45px;
+  margin: 16px 24px 16px 0;
+  background: rgb(255, 255, 255);
+  color:#fff
 }
