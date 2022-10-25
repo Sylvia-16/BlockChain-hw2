@@ -27,8 +27,8 @@ const FinishPage = () => {
        
         {
           title: '投票结果',
-            dataIndex: 'vote',
-            key: 'vote',
+            dataIndex: 'result',
+            key: 'result',
             // 如果
         },
         
@@ -42,6 +42,10 @@ const FinishPage = () => {
                 // 获取新的数据
             
                 let pArr:DataType[] = []
+
+                let ss:string='通过'
+                let fs:string='未通过'
+                let d:DataType 
                 for(let i = 0; i < pNum; i++){
                     // 判断该提案是否已经结束
                     let isEnd = await proposeContract.methods.getIsFinish(i).call()
@@ -51,19 +55,24 @@ const FinishPage = () => {
                     if(isEnd==='1'){
                     const pName = await proposeContract.methods.getPropName(i).call()
                     const pResult = await proposeContract.methods.countVote(i).call()
+          
+                   
                     if (pResult === '0') {
-                        pArr.push({
+                        d = {
                             index: i,
                             name: pName,
-                            result: '未通过'
-                        })
+                            result:fs
+                        }
+                       
                     }else{
-                        pArr.push({
-                            index: i,
-                            name: pName,
-                            result: '通过'
-                        })
+                        d ={
+                          index:i,
+                          name:pName,
+                          result:ss
+                        }
                     }
+
+                    pArr.push(d)
                 }
                 }
                 setfinishData(pArr)

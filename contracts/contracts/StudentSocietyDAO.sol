@@ -24,11 +24,9 @@ contract StudentSocietyDAO {
 
         // TODO add any  if you want
     }
-    struct student {
-        uint32 succ_num; // 提案通过次数
-    }
+    uint32 succ_num; //成功的提案数
     // a map from student address to student
-    mapping(address => student) public studentMap;
+    mapping(address => uint32) public succ_Map; //通过地址获得每个学生的提案数目
     Proposal[] public proposals; //
 
     StuERC20 public studentERC20;
@@ -42,8 +40,6 @@ contract StudentSocietyDAO {
         // maybe you need a constructor
         studentERC20 = new StuERC20("name", "symbol");
     }
-
-    //领取token
 
     // 提出提案
     function propose(string memory name, uint256 duration) public {
@@ -91,8 +87,10 @@ contract StudentSocietyDAO {
         string memory n = proposals[i].name;
         return n;
     }
-
-    function vote(uint32 index, uint32 opin) public {
+    function getVoteResult(uint32  i) public view returns(uint32){
+        return proposals[i].vote;
+    }
+    function Vote(uint32 index, uint32 opin) public {
         // 要求目前时间在提案的时间范围内
         require(
             block.timestamp >= proposals[index].startTime &&
@@ -107,18 +105,29 @@ contract StudentSocietyDAO {
     }
 
     // 时间截止后，统计投票结果
-    function countVote(uint32 index) public returns (uint32) {
+    function countVote(uint32 index) public  {
         require(
             block.timestamp >= proposals[index].endTime,
             "The proposal is not over"
         );
+       
         if (proposals[index].vote > 0) {
             // 支持票数多，提案通过
             // 把token转给提案发起者
-            // studentERC20.transfer(proposals[index].proposer, 2);
-            return 1;
-        } else {
-            return 0;
-        }
+            // studentERC20on.transfer(proposals[index].proposer, 2);
+            // 把提案发起人的succ+num++
+            succ_Map[proposals[index].proposer] += 1;
+         
+        } 
     }
+        // 根据地址返回mapping值
+    function getSuccNum(address addr) public view returns (uint32) {
+        return succ_Map[addr];
+    }
+    function getReward(address addr) public {
+        require(succ_Map[addr] >= 3, "no enough succ num");
+        // studentERC20.transfer(addr, 1);
+    }
+
+    
 }
