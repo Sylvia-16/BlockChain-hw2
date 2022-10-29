@@ -64,7 +64,7 @@ contract StudentSocietyDAO {
         );
         emit ProposalInitiated(uint32(proposals.length));
         //收取两个token
-        // studentERC20.transferFrom(msg.sender, address(this), 2);
+        studentERC20.transferFrom(msg.sender, address(this), 2);
     }
 
     function getIsFinish(uint32 i) public view returns (uint32) {
@@ -101,7 +101,7 @@ contract StudentSocietyDAO {
         require(msg.sender.balance >= 1, "no enough money");
         proposals[index].vote += opin;
         // 收取一个token
-        // studentERC20.transferFrom(msg.sender, address(this), 1);
+        studentERC20.transferFrom(msg.sender, address(this), 1);
     }
 
     // 时间截止后，统计投票结果
