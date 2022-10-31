@@ -5,6 +5,7 @@ pragma solidity ^0.8.9;
 // You can use this dependency directly because it has been installed already
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./StuERC20.sol";
+import "./StuERC721.sol";
 
 // Uncomment this line to use console.log
 // import "hardhat/console.sol";
@@ -30,6 +31,7 @@ contract StudentSocietyDAO {
     Proposal[] public proposals; //
 
     StuERC20 public studentERC20;
+    StuERC721 public studentERC721;
 
     // mapping(uint32 => Proposal) proposals; // A map from proposal index to proposal
 
@@ -39,6 +41,7 @@ contract StudentSocietyDAO {
     constructor() {
         // maybe you need a constructor
         studentERC20 = new StuERC20("name", "symbol");
+        studentERC721 = new StuERC721();
     }
 
     // 提出提案
@@ -87,9 +90,11 @@ contract StudentSocietyDAO {
         string memory n = proposals[i].name;
         return n;
     }
-    function getVoteResult(uint32  i) public view returns(uint32){
+
+    function getVoteResult(uint32 i) public view returns (uint32) {
         return proposals[i].vote;
     }
+
     function Vote(uint32 index, uint32 opin) public {
         // 要求目前时间在提案的时间范围内
         require(
@@ -99,35 +104,38 @@ contract StudentSocietyDAO {
         );
         // 要求投票者有足够的token
         require(msg.sender.balance >= 1, "no enough money");
+        require(
+            proposals[index].proposer != msg.sender,
+            "you can't vote yourself"
+        );
         proposals[index].vote += opin;
         // 收取一个token
         studentERC20.transferFrom(msg.sender, address(this), 1);
     }
 
     // 时间截止后，统计投票结果
-    function countVote(uint32 index) public  {
+    function countVote(uint32 index) public {
         require(
             block.timestamp >= proposals[index].endTime,
             "The proposal is not over"
         );
-       
+
         if (proposals[index].vote > 0) {
             // 支持票数多，提案通过
             // 把token转给提案发起者
             // studentERC20on.transfer(proposals[index].proposer, 2);
             // 把提案发起人的succ+num++
             succ_Map[proposals[index].proposer] += 1;
-         
-        } 
+        }
     }
-        // 根据地址返回mapping值
+
+    // 根据地址返回mapping值
     function getSuccNum(address addr) public view returns (uint32) {
         return succ_Map[addr];
     }
+
     function getReward(address addr) public {
         require(succ_Map[addr] >= 3, "no enough succ num");
         // studentERC20.transfer(addr, 1);
     }
-
-    
 }
