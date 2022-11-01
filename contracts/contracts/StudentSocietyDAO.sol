@@ -22,7 +22,7 @@ contract StudentSocietyDAO {
         uint256 endTime; // proposal 结束时间
         string name; // proposal name
         uint32 vote; // 支持票 vote+1, 反对票 vote-1
-
+        bool isAwarded; // 是否已经发放奖励
         // TODO add any  if you want
     }
     uint32 succ_num; //成功的提案数
@@ -62,14 +62,20 @@ contract StudentSocietyDAO {
                 stime,
                 etime,
                 name,
-                0
+                0,
+                false
             )
         );
         emit ProposalInitiated(uint32(proposals.length));
         //收取两个token
         studentERC20.transferFrom(msg.sender, address(this), 2);
     }
-
+    function getIsAwarded(uint32 index) public view returns (bool) {
+        return proposals[index].isAwarded;
+    }
+    function setIsAwarded(uint32 index) public {
+        proposals[index].isAwarded = true;
+    }
     function getIsFinish(uint32 i) public view returns (uint32) {
         // 如果当前时间比结束时间大，那么就是结束了
         if (block.timestamp > proposals[i].endTime) {
@@ -123,7 +129,7 @@ contract StudentSocietyDAO {
         if (proposals[index].vote > 0) {
             // 支持票数多，提案通过
             // 把token转给提案发起者
-            // studentERC20on.transfer(proposals[index].proposer, 2);
+            studentERC20.transfer(proposals[index].proposer, 2);
             // 把提案发起人的succ+num++
             succ_Map[proposals[index].proposer] += 1;
         }
@@ -132,10 +138,5 @@ contract StudentSocietyDAO {
     // 根据地址返回mapping值
     function getSuccNum(address addr) public view returns (uint32) {
         return succ_Map[addr];
-    }
-
-    function getReward(address addr) public {
-        require(succ_Map[addr] >= 3, "no enough succ num");
-        // studentERC20.transfer(addr, 1);
     }
 }
