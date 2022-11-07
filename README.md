@@ -272,13 +272,13 @@ await stuERC721Contract.methods
 
 在成功启动项目之后，进入如下界面。
 
-<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107132632124.png" alt="image-20221107132632124" style="zoom: 33%;" />
+https://raw.githubusercontent.com/Sylvia-16/BlockChain-hw2/master/assets/image-20221107132632124.png?token=GHSAT0AAAAAABZ6CGOUDQKGJ5HKH6ECGWLQY3IVNDA
 
 首先点击加入社团。
 
 在metamask上会出现如下的界面：
 
-<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107132819282.png" alt="image-20221107132819282" style="zoom: 67%;" />
+![image-20221107132819282](./assets/image-20221107132819282.png)
 
 确认交易之后在前端会出现如下提示：
 
