@@ -272,69 +272,69 @@ await stuERC721Contract.methods
 
 在成功启动项目之后，进入如下界面。
 
-https://raw.githubusercontent.com/Sylvia-16/BlockChain-hw2/master/assets/image-20221107132632124.png?token=GHSAT0AAAAAABZ6CGOUDQKGJ5HKH6ECGWLQY3IVNDA
+<img src="./assets/image-20221107132632124.png" alt="image-20221107132632124" style="zoom:33%;" />
 
 首先点击加入社团。
 
 在metamask上会出现如下的界面：
 
-![image-20221107132819282](./assets/image-20221107132819282.png)
+<img src="./assets/image-20221107132819282.png" alt="image-20221107132819282" style="zoom:50%;" />
 
 确认交易之后在前端会出现如下提示：
 
-<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107132858186.png" alt="image-20221107132858186" style="zoom: 50%;" />
+<img src="./assets/image-20221107132858186.png" alt="image-20221107132858186" style="zoom:50%;" />
 
 并且在metamask记录如下的活动：
 
-![image-20221107133051016](D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107133051016.png)
+<img src="./assets/image-20221107133051016.png" alt="image-20221107133051016" style="zoom:50%;" />
 
 该区块多了一条交易记录：
 
-![image-20221107133139173](D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107133139173.png)
+<img src="./assets/image-20221107133139173.png" alt="image-20221107133139173" style="zoom:50%;" />
 
 并且可以通过界面中的查看个人信息看到目前的token数目为
 
-![image-20221107133243968](D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107133243968.png)
+<img src="./assets/image-20221107133243968.png" alt="image-20221107133243968" style="zoom:50%;" />
 
 
 
 有了token之后我们就可以进行发起提案
 
-![image-20221107133418060](D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107133418060.png)
+<img src="./assets/image-20221107133418060.png" alt="image-20221107133418060" style="zoom:67%;" />
 
 输入提案名称和持续时间之后点击submit按钮，提交提案。
 
 并且需要在metamask中确认允许`propose`合同访问资金。
 
-<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107133454394.png" alt="image-20221107133454394" style="zoom:67%;" />
+<img src="./assets/image-20221107133454394.png" alt="image-20221107133454394" style="zoom:67%;" />
 
-<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107133556389.png" alt="image-20221107133556389" style="zoom:67%;" />
+<img src="./assets/image-20221107133556389.png" alt="image-20221107133556389" style="zoom:67%;" />
 
 并且确认propose函数的操作。
 
 然后我们可以看到前端提示：
 
-<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107133629048.png" alt="image-20221107133629048" style="zoom: 67%;" />
+<img src="./assets/image-20221107133629048.png" alt="image-20221107133629048" style="zoom:67%;" />
 
 并且在列表中成功显示：
 
-<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107133644605.png" alt="image-20221107133644605" style="zoom:50%;" />
 
 
+<img src="./assets/image-20221107133644605.png" alt="image-20221107133644605" style="zoom:50%;" />
 
 在ganache上也可以看到两个新`transaction`
 
-<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107133831928.png" alt="image-20221107133831928" style="zoom:50%;" />
+<img src="./assets/image-20221107133831928.png" alt="image-20221107133831928" style="zoom:50%;" />
 
 这个为approve
 
-<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107133846213.png" alt="image-20221107133846213" style="zoom:50%;" />
+![image-20221107133846213](./assets/image-20221107133846213.png)
 
 这个为propose
 
 重复提案操作，我们发起三个提案。
 
-<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107134113573.png" alt="image-20221107134113573" style="zoom: 50%;" />
+<img src="./assets/image-20221107134113573.png" alt="image-20221107134113573" style="zoom:50%;" />
 
 (因为时间原因，第0个提案已经结束了)。
 
@@ -344,21 +344,21 @@ https://raw.githubusercontent.com/Sylvia-16/BlockChain-hw2/master/assets/image-2
 
 
 
-![image-20221107134403620](D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107134403620.png)
+![image-20221107134403620](./assets/image-20221107134403620.png)
 
 点击上图表格中的支持按钮：
 
-<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107134721695.png" alt="image-20221107134721695" style="zoom: 50%;" />
+<img src="./assets/image-20221107134721695.png" alt="image-20221107134721695" style="zoom:50%;" />
 
 在metamask 中确认。
 
 在确认之后前端提示投票成功
 
-<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107134801269.png" alt="image-20221107134801269" style="zoom:50%;" />
+<img src="./assets/image-20221107134801269.png" alt="image-20221107134801269" style="zoom:50%;" />
 
 然后在区块链中显示如下transaction：
 
-<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107134813504.png" alt="image-20221107134813504" style="zoom: 33%;" />
+<img src="./assets/image-20221107134813504.png" alt="image-20221107134813504" style="zoom:33%;" />
 
 
 
@@ -366,29 +366,29 @@ https://raw.githubusercontent.com/Sylvia-16/BlockChain-hw2/master/assets/image-2
 
 当投票结束之后，就可以查看投票结果：
 
-<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107135044792.png" alt="image-20221107135044792" style="zoom:50%;" />
+<img src="./assets/image-20221107135044792.png" alt="image-20221107135044792" style="zoom:50%;" />
 
 如果投票通过，前端界面会调用函数发放奖励：
 
-<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107135151935.png" alt="image-20221107135151935" style="zoom:33%;" />
+<img src="./assets/image-20221107135151935.png" alt="image-20221107135151935" style="zoom:33%;" />
 
 我们可以看到，原本成功的提案数目为2，token数目为9988，在再成功一个提案之后，可以看到token有9990个。
 
-<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107142353584.png" alt="image-20221107142353584" style="zoom:50%;" />
+<img src="./assets/image-20221107142353584.png" alt="image-20221107142353584" style="zoom:50%;" />
 
-<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107142601607.png" alt="image-20221107142601607" style="zoom:50%;" />
+<img src="./assets/image-20221107142601607.png" alt="image-20221107142601607" style="zoom:50%;" />
 
 当前端检测到提案数目为3时，会给该用户发nft。
 
-<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107142624583.png" alt="image-20221107142624583" style="zoom:50%;" />
+<img src="./assets/image-20221107142624583.png" alt="image-20221107142624583" style="zoom:50%;" />
 
 我们在metamask中看到该transaction
 
-![image-20221107142647650](D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107142647650.png)
+![image-20221107142647650](./assets/image-20221107142647650.png)
 
 并且在ganache中查看。
 
-![image-20221107142716425](D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107142716425.png)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+![image-20221107142716425](./assets/image-20221107142716425.png)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
 
 ## 参考内容
 
