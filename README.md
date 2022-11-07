@@ -306,9 +306,9 @@ await stuERC721Contract.methods
 
 并且需要在metamask中确认允许`propose`合同访问资金。
 
-<img src="./assets/image-20221107133454394.png" alt="image-20221107133454394" style="zoom:67%;" />
+<img src="./assets/image-20221107133454394.png" alt="image-20221107133454394" style="zoom: 33%;" />
 
-<img src="./assets/image-20221107133556389.png" alt="image-20221107133556389" style="zoom:67%;" />
+<img src="./assets/image-20221107133556389.png" alt="image-20221107133556389" style="zoom: 33%;" />
 
 并且确认propose函数的操作。
 
