@@ -4,30 +4,32 @@
 
 ## 如何运行
 
-1. 在本地启动ganache应用。
+1. 在本地启动 ganache 应用。
 
 2. 在 `./contracts` 中安装需要的依赖，运行如下的命令：
-    ```bash
-    npm install
-    ```
+
+   ```bash
+   npm install
+   ```
 
 3. 在 `./contracts` 中编译合约，运行如下的命令：
-    ```bash
-    npx hardhat compile
-    ```
+
+   ```bash
+   npx hardhat compile
+   ```
 
 4. 将合约部署到`ganache`，运行如下的命令。
 
-    ```
-    npx hardhat run scripts/deploy.ts --network ganache
-    ```
+   ```
+   npx hardhat run scripts/deploy.ts --network ganache
+   ```
 
-5. 将部署后`StudentSocietyDAO`、`stuERC20`、`stuERC721`的地址复制到`src\utils\contract-addresses.json`中。并且将三个abi复制到前端的`src\utils\abis`文件夹中的响应文件。
+5. 将部署后`StudentSocietyDAO`、`stuERC20`、`stuERC721`的地址复制到`src\utils\contract-addresses.json`中。并且将三个 abi 复制到前端的`src\utils\abis`文件夹中的响应文件。
 
-6. 在 `./frontend` 中启动前端程序，运行如下的命令：
-    ```bash
-    npm run start
-    ```
+6. 在 `./myapp` 中启动前端程序，运行如下的命令：
+   ```bash
+   npm run start
+   ```
 
 ## 功能实现分析
 
@@ -35,7 +37,7 @@
 
 建议分点列出。
 
-### ERC20发币
+### ERC20 发币
 
 实现了一个`StuERC20`合约，在页面上设置一个`加入社团`的按钮，学生点击`加入社团`前端调用`airdrop`函数，向学生发币。
 
@@ -63,8 +65,6 @@ try {
       }
 ```
 
-
-
 ### 学生发起提案
 
 在合约`StudentSocietyDAO`中定义了`proposal`结构体。
@@ -87,7 +87,7 @@ struct Proposal {
 并且定义一个`proposal`数组
 
 ```solidity
-Proposal[] public proposals; 
+Proposal[] public proposals;
 ```
 
 然后定义一个`propose`函数，来进行合约投票的操作。
@@ -120,7 +120,7 @@ Proposal[] public proposals;
 
 前端调用`propose`函数，向其中传入`propose`的名称和持续时间。其中用户界面的时间单位为小时，需要在前端进行转化为秒再传入函数。
 
-而且因为`transferFrom`是委托转账，需要先`approve`。用户调用`StuERC20`的approve函数，`approve` `StudentSocietyDAO`合约，允许其帮自己转账1000.之后在`propose`函数中的`transferFrom`，将token转给`StudentSocietyDAO`。
+而且因为`transferFrom`是委托转账，需要先`approve`。用户调用`StuERC20`的 approve 函数，`approve` `StudentSocietyDAO`合约，允许其帮自己转账 1000.之后在`propose`函数中的`transferFrom`，将 token 转给`StudentSocietyDAO`。
 
 ```solidity
  try {
@@ -129,7 +129,7 @@ Proposal[] public proposals;
         });
         // 将提案提交到合约
         let h: number;
-        // 把time乘3600转化成秒 
+        // 把time乘3600转化成秒
         h = values.time * 3600;
         console.log('time', h);
         await proposeContract.methods.propose(values.name, h).send({
@@ -143,8 +143,6 @@ Proposal[] public proposals;
         alert(error.message);
       }
 ```
-
-
 
 ### 学生投票
 
@@ -170,6 +168,29 @@ Proposal[] public proposals;
     }
 ```
 
+在前端调用时，会检查目前 allowance 是否为 0，若为 0，则 approve，反之则直接调用 Vote.
+
+```js
+try {
+        const allw = await stuERC20Contract.methods
+          .allowance(account, proposeContract.options.address)
+          .call();
+        console.log('allw', allw);
+        if (allw === '0') {
+          await stuERC20Contract.methods.approve(proposeContract.options.address, 1000).send({
+            from: account,
+          });
+        }
+
+        console.log('account', account);
+        await proposeContract.methods.Vote(record.index, 1).send({
+          from: account,
+        });
+
+        alert('投票成功');
+      }
+```
+
 ### 投票通过发放奖励
 
 在结束之后前端调用`AwardToken`给相应的投票人发放奖励。
@@ -192,9 +213,7 @@ Proposal[] public proposals;
     }
 ```
 
-
-
-### ERC721发币
+### ERC721 发币
 
 首先创建`StuERC721`合约。
 
@@ -224,43 +243,43 @@ contract StuERC721 is ERC721URIStorage {
 
 ```
 
-然后生成代币URI。将图片上传到` IPFS`，然后将生成的哈希值加上网址，形成如下的`json`文件
+然后生成代币 URI。将图片上传到` IPFS`，然后将生成的哈希值加上网址，形成如下的`json`文件
 
 ```json
 {
-    "name": "NFT Art",
-    "description": "This image shows the true nature of NFT.",
-    "image": "https://ipfs.io/ipfs/QmaG8C3xjF2WjW9LmGWGSHT6ZPhS3AZ4FH3n21wuTccdPb",
-
+  "name": "NFT Art",
+  "description": "This image shows the true nature of NFT.",
+  "image": "https://ipfs.io/ipfs/QmaG8C3xjF2WjW9LmGWGSHT6ZPhS3AZ4FH3n21wuTccdPb"
 }
 ```
 
-再将json文件上传`ipfs`，获取哈希值，将哈希值和网址保存作为`URI `.
+再将 json 文件上传`ipfs`，获取哈希值，将哈希值和网址保存作为`URI `.
 
 在前端首先检查该学生是否成功投票三次，若是，则调用该函数，进行发币。
 
 ```javascript
 await stuERC721Contract.methods
-          .awardItem(account, 'https://ipfs.io/ipfs/QmZS4LgipyEdForqdWgVBBQGZUyjzpTsNWBehXA4dSLJAn')
-          .send({
-            from: account,
-          });
+  .awardItem(
+    account,
+    "https://ipfs.io/ipfs/QmZS4LgipyEdForqdWgVBBQGZUyjzpTsNWBehXA4dSLJAn"
+  )
+  .send({
+    from: account,
+  });
 ```
 
-并且调用`balanceOf`进行查询nft的数目。
+并且调用`balanceOf`进行查询 nft 的数目。
 
 ```js
- const getNftNum = async () => {
-      if (stuERC721Contract) {
-        const sn = await stuERC721Contract.methods.balanceOf(account).call();
-        setnft(sn);
-      } else {
-        alert('Contract not exists.');
-      }
-    };
+const getNftNum = async () => {
+  if (stuERC721Contract) {
+    const sn = await stuERC721Contract.methods.balanceOf(account).call();
+    setnft(sn);
+  } else {
+    alert("Contract not exists.");
+  }
+};
 ```
-
-
 
 ## 项目运行截图
 
@@ -276,7 +295,7 @@ await stuERC721Contract.methods
 
 首先点击加入社团。
 
-在metamask上会出现如下的界面：
+在 metamask 上会出现如下的界面：
 
 <img src="./assets/image-20221107132819282.png" alt="image-20221107132819282" style="zoom:50%;" />
 
@@ -284,7 +303,7 @@ await stuERC721Contract.methods
 
 <img src="./assets/image-20221107132858186.png" alt="image-20221107132858186" style="zoom:50%;" />
 
-并且在metamask记录如下的活动：
+并且在 metamask 记录如下的活动：
 
 <img src="./assets/image-20221107133051016.png" alt="image-20221107133051016" style="zoom:50%;" />
 
@@ -292,25 +311,23 @@ await stuERC721Contract.methods
 
 <img src="./assets/image-20221107133139173.png" alt="image-20221107133139173" style="zoom:50%;" />
 
-并且可以通过界面中的查看个人信息看到目前的token数目为
+并且可以通过界面中的查看个人信息看到目前的 token 数目为
 
 <img src="./assets/image-20221107133243968.png" alt="image-20221107133243968" style="zoom:50%;" />
 
-
-
-有了token之后我们就可以进行发起提案
+有了 token 之后我们就可以进行发起提案
 
 <img src="./assets/image-20221107133418060.png" alt="image-20221107133418060" style="zoom:67%;" />
 
-输入提案名称和持续时间之后点击submit按钮，提交提案。
+输入提案名称和持续时间之后点击 submit 按钮，提交提案。
 
-并且需要在metamask中确认允许`propose`合同访问资金。
+并且需要在 metamask 中确认允许`propose`合同访问资金。
 
 <img src="./assets/image-20221107133454394.png" alt="image-20221107133454394" style="zoom: 33%;" />
 
 <img src="./assets/image-20221107133556389.png" alt="image-20221107133556389" style="zoom: 33%;" />
 
-并且确认propose函数的操作。
+并且确认 propose 函数的操作。
 
 然后我们可以看到前端提示：
 
@@ -318,31 +335,27 @@ await stuERC721Contract.methods
 
 并且在列表中成功显示：
 
-
-
 <img src="./assets/image-20221107133644605.png" alt="image-20221107133644605" style="zoom:50%;" />
 
-在ganache上也可以看到两个新`transaction`
+在 ganache 上也可以看到两个新`transaction`
 
 <img src="./assets/image-20221107133831928.png" alt="image-20221107133831928" style="zoom:50%;" />
 
-这个为approve
+这个为 approve
 
 ![image-20221107133846213](./assets/image-20221107133846213.png)
 
-这个为propose
+这个为 propose
 
 重复提案操作，我们发起三个提案。
 
 <img src="./assets/image-20221107134113573.png" alt="image-20221107134113573" style="zoom:50%;" />
 
-(因为时间原因，第0个提案已经结束了)。
+(因为时间原因，第 0 个提案已经结束了)。
 
 ### 投票
 
 因为不能对自己的提案进行投票，我们切换账户，进行投票。
-
-
 
 ![image-20221107134403620](./assets/image-20221107134403620.png)
 
@@ -350,17 +363,15 @@ await stuERC721Contract.methods
 
 <img src="./assets/image-20221107134721695.png" alt="image-20221107134721695" style="zoom:50%;" />
 
-在metamask 中确认。
+在 metamask 中确认。
 
 在确认之后前端提示投票成功
 
 <img src="./assets/image-20221107134801269.png" alt="image-20221107134801269" style="zoom:50%;" />
 
-然后在区块链中显示如下transaction：
+然后在区块链中显示如下 transaction：
 
 <img src="./assets/image-20221107134813504.png" alt="image-20221107134813504" style="zoom:33%;" />
-
-
 
 ### 查看投票结果
 
@@ -372,30 +383,30 @@ await stuERC721Contract.methods
 
 <img src="./assets/image-20221107135151935.png" alt="image-20221107135151935" style="zoom:33%;" />
 
-我们可以看到，原本成功的提案数目为2，token数目为9988，在再成功一个提案之后，可以看到token有9990个。
+我们可以看到，原本成功的提案数目为 2，token 数目为 9988，在再成功一个提案之后，可以看到 token 有 9990 个。
 
 <img src="./assets/image-20221107142353584.png" alt="image-20221107142353584" style="zoom:50%;" />
 
 <img src="./assets/image-20221107142601607.png" alt="image-20221107142601607" style="zoom:50%;" />
 
-当前端检测到提案数目为3时，会给该用户发nft。
+当前端检测到提案数目为 3 时，会给该用户发 nft。
 
 <img src="./assets/image-20221107142624583.png" alt="image-20221107142624583" style="zoom:50%;" />
 
-我们在metamask中看到该transaction
+我们在 metamask 中看到该 transaction
 
 ![image-20221107142647650](./assets/image-20221107142647650.png)
 
-并且在ganache中查看。
+并且在 ganache 中查看。
 
-![image-20221107142716425](./assets/image-20221107142716425.png)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+![image-20221107142716425](./assets/image-20221107142716425.png)
 
 ## 参考内容
 
-课程的参考Demo见：[DEMOs](https://github.com/LBruyne/blockchain-course-demos)。
+课程的参考 Demo 见：[DEMOs](https://github.com/LBruyne/blockchain-course-demos)。
 
-ERC721的创建和部署参考:
+ERC721 的创建和部署参考:
 
-+ [ERC721文档](https://docs.openzeppelin.com/contracts/4.x/api/token/erc721)
+- [ERC721 文档](https://docs.openzeppelin.com/contracts/4.x/api/token/erc721)
 
-+ [如何创建和部署ERC-721](https://cloud.tencent.com/developer/article/1808621)
+- [如何创建和部署 ERC-721](https://cloud.tencent.com/developer/article/1808621)

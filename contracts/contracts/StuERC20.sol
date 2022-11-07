@@ -16,8 +16,8 @@ contract StuERC20 is ERC20 {
         _mint(msg.sender, 10000);
         claimedAirdropPlayerList[msg.sender] = true;
     }
-    function IsJoin() external view returns (uint32) {
-        if(claimedAirdropPlayerList[msg.sender] == true){
+    function IsJoin(address a) external view returns (uint32) {
+        if(claimedAirdropPlayerList[a] == true){
             return 1;
         }else {
             return 0;
