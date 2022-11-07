@@ -10,12 +10,20 @@
     ```bash
     npm install
     ```
+
 3. 在 `./contracts` 中编译合约，运行如下的命令：
     ```bash
     npx hardhat compile
     ```
-4. 将合约部署到
-5. ...
+
+4. 将合约部署到`ganache`，运行如下的命令。
+
+    ```
+    npx hardhat run scripts/deploy.ts --network ganache
+    ```
+
+5. 将部署后`StudentSocietyDAO`、`stuERC20`、`stuERC721`的地址复制到`src\utils\contract-addresses.json`中。并且将三个abi复制到前端的`src\utils\abis`文件夹中的响应文件。
+
 6. 在 `./frontend` 中启动前端程序，运行如下的命令：
     ```bash
     npm run start
@@ -164,6 +172,26 @@ Proposal[] public proposals;
 
 ### 投票通过发放奖励
 
+在结束之后前端调用`AwardToken`给相应的投票人发放奖励。
+
+```js
+  function AwardToken(uint32 index) public {
+        require(
+            block.timestamp >= proposals[index].endTime,
+            "The proposal is not over"
+        );
+
+        if (proposals[index].vote > 0) {
+            // 支持票数多，提案通过
+            // 把token转给提案发起者
+            studentERC20.transfer(proposals[index].proposer, 2);
+            // 把提案发起人的succ+num++
+            succ_Map[proposals[index].proposer] += 1;
+            proposals[index].isAwarded = 1;
+        }
+    }
+```
+
 
 
 ### ERC721发币
@@ -209,13 +237,158 @@ contract StuERC721 is ERC721URIStorage {
 
 再将json文件上传`ipfs`，获取哈希值，将哈希值和网址保存作为`URI `.
 
-在前端调用该函数，进行发币。
+在前端首先检查该学生是否成功投票三次，若是，则调用该函数，进行发币。
+
+```javascript
+await stuERC721Contract.methods
+          .awardItem(account, 'https://ipfs.io/ipfs/QmZS4LgipyEdForqdWgVBBQGZUyjzpTsNWBehXA4dSLJAn')
+          .send({
+            from: account,
+          });
+```
+
+并且调用`balanceOf`进行查询nft的数目。
+
+```js
+ const getNftNum = async () => {
+      if (stuERC721Contract) {
+        const sn = await stuERC721Contract.methods.balanceOf(account).call();
+        setnft(sn);
+      } else {
+        alert('Contract not exists.');
+      }
+    };
+```
+
+
 
 ## 项目运行截图
 
 放一些项目运行截图。
 
 项目运行成功的关键页面和流程截图。主要包括操作流程以及和区块链交互的截图。
+
+### 发起提案
+
+在成功启动项目之后，进入如下界面。
+
+<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107132632124.png" alt="image-20221107132632124" style="zoom: 33%;" />
+
+首先点击加入社团。
+
+在metamask上会出现如下的界面：
+
+<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107132819282.png" alt="image-20221107132819282" style="zoom: 67%;" />
+
+确认交易之后在前端会出现如下提示：
+
+<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107132858186.png" alt="image-20221107132858186" style="zoom: 50%;" />
+
+并且在metamask记录如下的活动：
+
+![image-20221107133051016](D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107133051016.png)
+
+该区块多了一条交易记录：
+
+![image-20221107133139173](D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107133139173.png)
+
+并且可以通过界面中的查看个人信息看到目前的token数目为
+
+![image-20221107133243968](D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107133243968.png)
+
+
+
+有了token之后我们就可以进行发起提案
+
+![image-20221107133418060](D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107133418060.png)
+
+输入提案名称和持续时间之后点击submit按钮，提交提案。
+
+并且需要在metamask中确认允许`propose`合同访问资金。
+
+<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107133454394.png" alt="image-20221107133454394" style="zoom:67%;" />
+
+<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107133556389.png" alt="image-20221107133556389" style="zoom:67%;" />
+
+并且确认propose函数的操作。
+
+然后我们可以看到前端提示：
+
+<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107133629048.png" alt="image-20221107133629048" style="zoom: 67%;" />
+
+并且在列表中成功显示：
+
+<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107133644605.png" alt="image-20221107133644605" style="zoom:50%;" />
+
+
+
+在ganache上也可以看到两个新`transaction`
+
+<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107133831928.png" alt="image-20221107133831928" style="zoom:50%;" />
+
+这个为approve
+
+<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107133846213.png" alt="image-20221107133846213" style="zoom:50%;" />
+
+这个为propose
+
+重复提案操作，我们发起三个提案。
+
+<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107134113573.png" alt="image-20221107134113573" style="zoom: 50%;" />
+
+(因为时间原因，第0个提案已经结束了)。
+
+### 投票
+
+因为不能对自己的提案进行投票，我们切换账户，进行投票。
+
+
+
+![image-20221107134403620](D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107134403620.png)
+
+点击上图表格中的支持按钮：
+
+<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107134721695.png" alt="image-20221107134721695" style="zoom: 50%;" />
+
+在metamask 中确认。
+
+在确认之后前端提示投票成功
+
+<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107134801269.png" alt="image-20221107134801269" style="zoom:50%;" />
+
+然后在区块链中显示如下transaction：
+
+<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107134813504.png" alt="image-20221107134813504" style="zoom: 33%;" />
+
+
+
+### 查看投票结果
+
+当投票结束之后，就可以查看投票结果：
+
+<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107135044792.png" alt="image-20221107135044792" style="zoom:50%;" />
+
+如果投票通过，前端界面会调用函数发放奖励：
+
+<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107135151935.png" alt="image-20221107135151935" style="zoom:33%;" />
+
+我们可以看到，原本成功的提案数目为2，token数目为9988，在再成功一个提案之后，可以看到token有9990个。
+
+<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107142353584.png" alt="image-20221107142353584" style="zoom:50%;" />
+
+<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107142601607.png" alt="image-20221107142601607" style="zoom:50%;" />
+
+当前端检测到提案数目为3时，会给该用户发nft。
+
+<img src="D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107142624583.png" alt="image-20221107142624583" style="zoom:50%;" />
+
+我们在metamask中看到该transaction
+
+![image-20221107142647650](D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107142647650.png)
+
+并且在ganache中查看。
+
+![image-20221107142716425](D:\Syliva\大三上\区块链\hw2\ZJU-blockchain-course-2022\assets\image-20221107142716425.png)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
 
 ## 参考内容
 

@@ -22,7 +22,7 @@ contract StudentSocietyDAO {
         uint256 endTime; // proposal 结束时间
         string name; // proposal name
         uint32 vote; // 支持票 vote+1, 反对票 vote-1
-        bool isAwarded; // 是否已经发放奖励
+        uint32 isAwarded; // 是否已经发放奖励
         // TODO add any  if you want
     }
     uint32 succ_num; //成功的提案数
@@ -54,6 +54,7 @@ contract StudentSocietyDAO {
         uint256 etime;
         uint256 stime = block.timestamp;
         etime = stime + duration;
+        // 打印
         // 把提案加入到队列中
         proposals.push(
             Proposal(
@@ -63,19 +64,33 @@ contract StudentSocietyDAO {
                 etime,
                 name,
                 0,
-                false
+                0
             )
         );
         emit ProposalInitiated(uint32(proposals.length));
         //收取两个token
         studentERC20.transferFrom(msg.sender, address(this), 2);
     }
-    function getIsAwarded(uint32 index) public view returns (bool) {
+
+    function GetFinishNum() public view returns (uint32) {
+        // 遍历proposal，看是否有已经结束的提案
+        uint32 num = 0;
+        for (uint32 i = 0; i < proposals.length; i++) {
+            if (proposals[i].endTime < block.timestamp) {
+                num++;
+            }
+        }
+        return num;
+    }
+
+    function getIsAwarded(uint32 index) public view returns (uint32) {
         return proposals[index].isAwarded;
     }
+
     function setIsAwarded(uint32 index) public {
-        proposals[index].isAwarded = true;
+        proposals[index].isAwarded = 1;
     }
+
     function getIsFinish(uint32 i) public view returns (uint32) {
         // 如果当前时间比结束时间大，那么就是结束了
         if (block.timestamp > proposals[i].endTime) {
@@ -120,7 +135,7 @@ contract StudentSocietyDAO {
     }
 
     // 时间截止后，统计投票结果
-    function countVote(uint32 index) public {
+    function AwardToken(uint32 index) public {
         require(
             block.timestamp >= proposals[index].endTime,
             "The proposal is not over"
@@ -132,6 +147,7 @@ contract StudentSocietyDAO {
             studentERC20.transfer(proposals[index].proposer, 2);
             // 把提案发起人的succ+num++
             succ_Map[proposals[index].proposer] += 1;
+            proposals[index].isAwarded = 1;
         }
     }
 
